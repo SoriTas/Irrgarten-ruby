@@ -45,6 +45,7 @@ module Irrgarten
         def protect
             
             if uses > 0
+                uses += -1
                 protect = @protection
             else
                 protect = 0
@@ -111,7 +112,7 @@ module Irrgarten
             @@generator.rand(competencia + 1)
         end 
         def self.discard_element(uses_left)
-            if @@generator.rand(@@max_uses + 1) < uses_left 
+            if @@generator.rand(@@max_uses + 1) > uses_left 
                 true
             else
                 false
