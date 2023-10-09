@@ -1,4 +1,6 @@
-class shield
+require_relative 'dice'
+
+class Shield
         def initialize(protection,uses)
             @protection = protection
             @uses = uses

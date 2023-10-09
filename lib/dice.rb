@@ -1,4 +1,4 @@
-class dice 
+class Dice 
         @@max_uses = 5
         @@max_intelligence = 10.0
         @@max_strength = 10.0

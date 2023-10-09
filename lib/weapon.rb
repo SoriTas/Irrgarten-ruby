@@ -1,4 +1,6 @@
-class weapon
+
+require_relative 'dice'
+class Weapon
         def initialize(power,uses)
             @power = power
             @uses = uses

@@ -1,4 +1,4 @@
-class game_state
+class Game_state
         def initialize(labyrinth,players,monsters,current_player,winner,log)
             @labyrinth = labyrinth
             @player = player

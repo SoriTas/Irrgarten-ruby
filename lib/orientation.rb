@@ -1,4 +1,4 @@
-module orientation
+module Orientation
     VERTICAL =:vertical 
     HORIZONTAL=:horizontal 
 end

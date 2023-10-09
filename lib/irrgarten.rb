@@ -13,5 +13,3 @@ module Irrgarten
     
     
 end
-
-Funciona en endeavouros
