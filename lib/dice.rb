@@ -27,11 +27,7 @@ class Dice
         end
         
         def self.resurrect_player
-            if @@generator.rand(1.0) < @@resurrect_prob 
-                resurrect = true
-            else
-                resurrect = false
-            end
+            @@generator.rand(1.0) < @@resurrect_prob 
         end
         
         def self.weapons_reward
