@@ -6,6 +6,7 @@ class Labyrinth
     @@BLOCK_CHAR = 'X'
     @@EMPTY_CHAR = '-'
     @@COMBAT_CHAR = 'C'
+    @@MONSTER_CHAR = 'M'
     @@EXIT_CHAR = 'E'
     @@ROW = 0
     @@COL = 1
@@ -16,19 +17,23 @@ class Labyrinth
         @n_cols = n_cols
         @exit_row = exit_row
         @exit_col = exit_col
-        @monsterGrid = Matrix.new(n_rows,n_cols)
-        @labyrinthGrid = Matrix.new(n_rows,n_cols)
-        @playerGrid = Matrix.new(n_rows,n_cols)
+        @monsterGrid = Matrix.new(n_rows){Array.new(n_cols,@@EMPTY_CHAR)}
+        @labyrinthGrid = Matrix.new(n_rows){Array.new(n_cols,nil)}
+        @playerGrid = Matrix.new(n_rows){Array.new(n_cols,nil)}
     end
-    // Proxima practica
+    attr_reader :n_rows
+    attr_reader :n_cols
+    attr_reader :exit_row
+    attr_reader :exit_col
+    attr_reader :monsterGrid
+    attr_reader :playerGrid
+    # Proxima practica
     def spread_players(players)
 
     end
-    // Preguntar al teacher
     def have_a_winner()
-        @playerGrid[@exit_row][@exit_col].present?
+        @playerGrid[@exit_row][@exit_col].nil?
     end
-    //  Preguntar al teacher
     def to_string()
         estado = ""
         for i in 0..@n_rows-1
@@ -37,23 +42,23 @@ class Labyrinth
             end
             estado << "\n"
         end
+        estado
     end
-    // preguntar al teacher
     def add_monster(row, col, monster)
         if row > @n_rows || col > @n_cols || row < 0 || col < 0
             raise Exception.new("Parametros fuera de rango")
         end
         @monsterGrid[row][col] = monster
     end
-    // Para la proxima práctica
+    # Para la proxima práctica
     def put_player(direction, player)
 
     end
-    // Para la proxima practica
+    # Para la proxima practica
     def add_block(orientation, start_row, start_column, length)
 
     end
-    // Para la proxima practica
+    # Para la proxima practica
     def valid_moves(row, col)
 
     end
@@ -64,48 +69,50 @@ class Labyrinth
         row > @n_rows && col > @n_cols && row < 0 && col < 0
     end
     def empty_pos(row, col)
-        @labyrinthGrid[row][col] == "-"
+        @labyrinthGrid[row][col] == @@EMPTY_CHAR
     end
     def monster_pos(row, col)
-        @labyrinthGrid[row][col] == "M"
+        @labyrinthGrid[row][col] == @@MONSTER_CHAR
     end
 
     def exit_pos(row,col)
         row == @exit_row && col == @exit_col
     end
     def combat_pos(row, col)
-        @labyrinthGrid[row][col] == "C"
+        @labyrinthGrid[row][col] == @@COMBAT_CHAR
     end
     def can_step_on(row, col)
-        row > @n_rows && col > @n_cols && row < 0 && col < 0 && @labyrinthGrid[i][j] != "X"
+        row > @n_rows && col > @n_cols && row < 0 && col < 0 && @labyrinthGrid[i][j] != @@BLOCK_CHAR
     end
     def update_old_pos(row, col)
         if row > @n_rows || col > @n_cols || row < 0 || col < 0
             raise Exception.new("Parametros fuera de rango")
         end
 
-        if @labyrinthGrid[row][col] == "C"
-            @labyrinthGrid[row][col] == "M"
+        if @labyrinthGrid[row][col] == @@COMBAT_CHAR
+            @labyrinthGrid[row][col] == @@MONSTER_CHAR
         else
-            @labyrinthGrid[row][col] == "-"
+            @labyrinthGrid[row][col] == @@EMPTY_CHAR
         end
 
     end
-    // Preguntar al teacher
+
     def dir_2_pos(row, col, direction)
 
     end
-    // Preguntar como hacer el retur
     def random_empty_pos()
-        no_vacio = true
-        while no_vacio
+        no_vacio = false
+        pos = [0,0]
+        while no_vacio == false
             fila_aleatoria = Dice.random_pos(@n_rows)
             columna_aleatoria = Dice.random_pos(@n_cols)
-            no_vacio = @labyrinthGrid[fila_aleatoria][columna_aleatoria] == "-"
+            no_vacio = @labyrinthGrid[fila_aleatoria][columna_aleatoria] == @@EMPTY_CHAR
         end
-
+        pos[0] = fila_aleatoria
+        pos[1] = columna_aleatoria
+        pos
     end
-    // Para la proxima practica
+    # Para la proxima practica
     def put_player_2d(old_row, row, col)
 
     end
