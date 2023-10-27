@@ -4,12 +4,12 @@ class Player
   @@INITIAL_HEALTH=10
   @@HITS2LOSE=3
   
-  def initialize(name,number,intelligence,strength,health,row,col,consecutive_hits)
+  def initialize(name,number,intelligence,strength,row,col,consecutive_hits)
     @name = name
     @number = number
     @intelligence = intelligence
     @strength = strength
-    @health = health
+    @health = @@INITIAL_HEALTH
     @row = row
     @col = col
     @consecutive_hits = consecutive_hits
