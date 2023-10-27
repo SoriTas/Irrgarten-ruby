@@ -4,7 +4,7 @@ class Player
   @@INITIAL_HEALTH=10
   @@HITS2LOSE=3
   
-  def initialize(name,number,intelligence,strength,row,col,consecutive_hits)
+  def initialize(name,number,intelligence,strength,row,col)
     @name = name
     @number = number
     @intelligence = intelligence
@@ -12,9 +12,9 @@ class Player
     @health = @@INITIAL_HEALTH
     @row = row
     @col = col
-    @consecutive_hits = consecutive_hits
-    @weapons = Array.new 
-    @shields = Array.new
+    @consecutive_hits = 0
+    @weapons = Array.new(@@MAX_WEAPONS)
+    @shields = Array.new(@@MAX_SHIELDS)
   end
 
   def resurrect
