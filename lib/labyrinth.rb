@@ -20,6 +20,7 @@ class Labyrinth
         @monsterGrid = Matrix.new(n_rows){Array.new(n_cols,@@EMPTY_CHAR)}
         @labyrinthGrid = Matrix.new(n_rows){Array.new(n_cols,nil)}
         @playerGrid = Matrix.new(n_rows){Array.new(n_cols,nil)}
+        @labyrinthGrid[@exit_row][@exit_col] = @@EXIT_CHAR
     end
     attr_reader :n_rows
     attr_reader :n_cols
@@ -31,9 +32,11 @@ class Labyrinth
     def spread_players(players)
 
     end
+    #@brief Return true if there is a player in the exit square
     def have_a_winner()
         @playerGrid[@exit_row][@exit_col].nil?
     end
+    #@brief  convert to string the current state of the labyrinth
     def to_string()
         estado = ""
         for i in 0..@n_rows-1
@@ -44,6 +47,7 @@ class Labyrinth
         end
         estado
     end
+    #brief add a monster to the labyrinth
     def add_monster(row, col, monster)
         if row > @n_rows || col > @n_cols || row < 0 || col < 0
             raise Exception.new("Parametros fuera de rango")
@@ -64,26 +68,45 @@ class Labyrinth
     end
     
     private
-
+    #@brief Return true if the selected position is inside the labyrinth
+    #@param row the row of the position
+    # @param col the col of the position
     def pos_ok(row, col)
         row > @n_rows && col > @n_cols && row < 0 && col < 0
     end
+    #@brief Return true if the position given is empty
+    # @param row the row of the position
+    # @param col the col of the position
     def empty_pos(row, col)
         @labyrinthGrid[row][col] == @@EMPTY_CHAR
     end
+    #@brief return true if there is a monster in the position
+    # @param row the row of the position
+    #  @param col the col of the position
     def monster_pos(row, col)
         @labyrinthGrid[row][col] == @@MONSTER_CHAR
     end
-
+    #brief return true if the position given is the exit block
+    #@param row the row of the position
+    # @param col the col of the position
     def exit_pos(row,col)
         row == @exit_row && col == @exit_col
     end
+    #brief return if there is a combat in the given position
+    #@param row the row of the position
+    # @param col the col of the position
     def combat_pos(row, col)
         @labyrinthGrid[row][col] == @@COMBAT_CHAR
     end
+    #brief return true if the position can be accessed
+    #@param row the row of the position
+    # @param col the col of the position
     def can_step_on(row, col)
         row > @n_rows && col > @n_cols && row < 0 && col < 0 && @labyrinthGrid[i][j] != @@BLOCK_CHAR
     end
+    #brief change the the position to the current state
+    #@param row the row of the position
+    # @param col the col of the position
     def update_old_pos(row, col)
         if row > @n_rows || col > @n_cols || row < 0 || col < 0
             raise Exception.new("Parametros fuera de rango")
@@ -96,10 +119,29 @@ class Labyrinth
         end
 
     end
-
+    #brief
+    #@param row the row of the position
+    # @param col the col of the position
+    # @param direction the direction to advance
     def dir_2_pos(row, col, direction)
-
+        new_pos = Array.new
+        new_pos << row
+        new_pos << col
+        if direction == Directions::UP
+            new_pos[0] += 1
+        end
+        if direction == Directions::DOWN
+            new_pos[0] -= 1
+        end
+        if direction == Directions::RIGHT
+            new_pos[1] += 1
+        end
+        if direction == Directions::LEFT
+            new_pos[0] -= 1
+        end
+        new_pos
     end
+    # @brief return the position of an empty block
     def random_empty_pos()
         no_vacio = false
         pos = [0,0]
