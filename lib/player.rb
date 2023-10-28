@@ -1,11 +1,16 @@
+require_relative 'directions'
+require_relative 'weapon'
+require_relative 'shield'
+require_relative 'dice'
+
 class Player
   @@MAX_WEAPONS=2
   @@MAX_SHIELDS=3
   @@INITIAL_HEALTH=10
   @@HITS2LOSE=3
   
-  def initialize(name,number,intelligence,strength,row,col)
-    @name = name
+  def initialize(number,intelligence,strength,row,col)
+    @name = "Player #" + number
     @number = number
     @intelligence = intelligence
     @strength = strength
@@ -16,49 +21,89 @@ class Player
     @weapons = Array.new(@@MAX_WEAPONS)
     @shields = Array.new(@@MAX_SHIELDS)
   end
-
+  #@brief It empties the weapon and shield array and returns the health and consecutive hits to its default value
   def resurrect
     
-  end
+    @weapons = Array.clear
+    @shields = Array.clear
+    @health = @@INITIAL_HEALTH
+    reset_hits
 
+  end
+  #@brief returns the row of the players position
   def get_row
     
-  end
+    return @row
 
+  end
+  #@brief returns the column of the players position
   def get_col
     
-  end
+    return @col
 
+  end
+  #@brief returns the number of the player
   def get_number
     
-  end
-  
-  def set_pos
-    
-  end
+    return @number
 
+  end
+  #@biref Modifies the players position
+  #@param row the row of the players position
+  #@param col the column of the players position
+  def set_pos(row, col)
+    
+    @row = row
+    @col = col
+
+  end
+  #@brief returns if the player is dead
   def dead
     
-  end
+    @health <= 0
 
+  end
+  
   def move(direction,valid_moves)
     
   end
-
+  #@brief adds the player strength with the value of his weapons
   def attack
     
-  end
+    attack = @strength + sum_weapons
 
+    attack
+
+  end
+  #@brief this method uses the method manage_hit
+  #@param is the value of the recieved attack
   def defend(recieved_attack)
     
+    manage_hit(recieved_attack)
+
   end
 
   def recieve_reward
     
   end
-
+  #@brief converts to string the current state of the player
   def to_string
     
+    estado = ""
+
+    estado << @name
+    estado << @intelligence
+    estado << @strength
+    estado << @health
+    estado << @row
+    estado << @col
+    estado << @consecutive_hits
+    estado << @weapons
+    estado << @shields
+    estado << "\n"
+
+    estado
+
   end
 
   def recieve_weapon(weapon)
@@ -70,41 +115,71 @@ class Player
   end
 
   private
-
+  #@brief generates a new weapon
   def new_weapon
     
-  end
+    weapon(Dice.weapon_power, Dice.uses_left)
 
+  end
+  #@brief generates a new shield
   def new_shield
     
-  end
+    shield(Dice.shield_power, Dice.uses_left)
 
+  end
+  #@brief returns the addition of all the weapons power
   def sum_weapons
-    
-  end
 
+    for i in 0...weapons.length
+    
+      suma = suma + weapons[i].attack
+
+    end
+
+    suma
+
+  end
+  #
   def sum_shields
     
-  end
+    for i in 0...shields.length
+    
+      suma = suma + shields[i].protect
 
+    end
+
+    suma
+
+  end
+  #@brief adds the player intelligence with the value of its weapons
   def defensive_energy
     
+    defense = @intelligence + sum_shields
+
+    defense
+
   end
 
   def manage_hit(recieved_attack)
     
   end
-
-  def reset_hits()
+  #@brief sets de value of consecutive_hits to cero
+  def reset_hits
     
-  end
+    @consecutive_hits = 0
 
+  end
+  #@brief decreases in one the value of the players health
   def got_wounded
     
-  end
+    @health -= 1
 
+  end
+  #@brief increases in one the value of the consecutive hits
   def inc_consecutive_hits
     
+    @consecutive_hits += 1
+
   end
 
 end
