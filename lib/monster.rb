@@ -24,7 +24,14 @@ class Monster
   end
   #Proxima Practica
   def defend(recieved_attack)
-    
+    is_dead = self.dead
+    unless is_dead
+      defensive_energy = Dice.intensity(@intelligence)
+      if defensive_energy < recieved_attack
+        self.got_wounded
+        is_dead = dead
+      end
+    end
   end
   #@brief Refresh the position of the monster
   #@param row Fila nueva

@@ -21,6 +21,9 @@ class Player
     @weapons = Array.new(@@MAX_WEAPONS)
     @shields = Array.new(@@MAX_SHIELDS)
   end
+  attr_reader :row
+  attr_reader :col
+  attr_reader :number
   #@brief It empties the weapon and shield array and returns the health and consecutive hits to its default value
   def resurrect
     
@@ -28,24 +31,6 @@ class Player
     @shields = Array.clear
     @health = @@INITIAL_HEALTH
     reset_hits
-
-  end
-  #@brief returns the row of the players position
-  def get_row
-    
-    return @row
-
-  end
-  #@brief returns the column of the players position
-  def get_col
-    
-    return @col
-
-  end
-  #@brief returns the number of the player
-  def get_number
-    
-    return @number
 
   end
   #@biref Modifies the players position
@@ -63,9 +48,15 @@ class Player
     @health <= 0
 
   end
-  
+  #Preguntar al teacher
   def move(direction,valid_moves)
-    
+    size = valid_moves.length
+    contained = valid_moves.contains(direction)
+    if size > 0 && !contained
+      Directions first_element = valid_moves[0];
+    else
+      direction
+    end
   end
   #@brief adds the player strength with the value of his weapons
   def attack
@@ -83,8 +74,19 @@ class Player
 
   end
 
-  def recieve_reward
-    
+  def receieve_reward
+    wReward = Dice.weapons_reward
+    sReward = Dice.shields_reward
+    for i in 1..wReward
+      wnew = self.new_weapon
+      self.recieve_weapon(wnew)
+    end
+    for i in 1..sReward
+      snew = self.new_shield
+      self.recieve_shield(snew)
+    end
+    extraHealth = Dice.health_reward
+    @health += extraHealth
   end
   #@brief converts to string the current state of the player
   def to_string
@@ -107,11 +109,31 @@ class Player
   end
 
   def recieve_weapon(weapon)
-    
+    for i in 1..@weapons.length
+      wi = @weapons.next
+      discard = wi.discard
+      if discard
+        @weapons.remove(wi)
+      end
+    end
+    size = @weapons.size
+    if size < @@MAX_WEAPONS
+      @weapons.add(weapon)
+    end
   end
 
-  def recieve_shield(shield)
-    
+  def recieve_shield(s)
+    for i in 1..@shields.length
+      si = @shields.next
+      discard = si.discard
+      if discard
+        @shields.remove(si)
+      end
+    end
+    size = @shields.length
+    if size < @@MAX_SHIELDS
+      @shields.add(s)
+    end
   end
 
   private
@@ -160,8 +182,20 @@ class Player
 
   end
 
-  def manage_hit(recieved_attack)
-    
+  def manage_hit(receieved_attack)
+    defense = self.defensive_energy
+    if defense < receieved_attack
+      self.got_wounded
+      self.inc_consecutive_hits
+    else
+      self.reset_hits
+    end
+    if @consecutive_hits == @@HITS2LOSE
+      self.reset_hits
+      lose = true
+    else
+      lose = false
+    end
   end
   #@brief sets de value of consecutive_hits to cero
   def reset_hits

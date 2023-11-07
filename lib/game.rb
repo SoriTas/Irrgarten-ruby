@@ -28,7 +28,28 @@ class Game
     end
     # Proxima practica
     def next_step(preferred_direction)
-
+        log = ""
+        dead = @current_player.dead
+        unless dead
+            direction = self.actual_direction(preferred_direction)
+            if direction != preferred_direction
+                self.log_player_no_orders
+            end
+            monster = @labyrinth.put_player(direction,@current_player)
+            if monster == nil
+                self.log_no_monster
+            else
+                winner = self.combat(monster)
+                self.manage_reward(winner)
+            end
+        else
+            self.manage_resurrection
+        end
+        end_game = self.finished
+        unless end_game
+            self.next_player
+        end
+        end_game
     end
     #@brief Return the state of the game
     def get_game_state
@@ -49,19 +70,49 @@ class Game
     end
     # Proxima Practica
     def actual_direction(preferred_direction)
-
+        current_row = @current_player.row
+        current_col = @current_player.col
+        valid_moves = @labyrinth.valid_moves(current_row,current_col)
+        output = @current_player.move(preferred_direction,valid_moves)
     end
     # proxima practica
     def combat(monster)
-
+        rounds = 0
+        winner = Game_character::PLAYER
+        player_attack = @current_player.attack
+        lose = monster.defend(player_attack)
+        while !lose && rounds < @@MAX_ROUNDS
+            winner = Game_character::MONSTER
+            rounds += 1
+            monster_attack = monster.attack
+            lose = @current_player.defend(monster_attack)
+            unless lose
+                winner = Game_character::PLAYER
+                player_attack = @current_player.attack
+                lose = monster.defend(player_attack)
+            end
+        end
+        self.log_rounds(rounds,@@MAX_ROUNDS)
+        winner
     end
     # Proxima practica
     def manage_reward(winner)
-
+        if winner == Game_character.PLAYER
+            @current_player.receive_reward
+            self.log_player_won
+        else
+            self.log_monster_won
+        end
     end
     # Proxima practica
     def manage_resurrection
-
+        resurrect = Dice.resurrect_player
+        if resurrect
+            @current_player.resurrect
+            self.log_resurrected
+        else
+            self.log_player_skip_turn
+        end
     end
     #@brief Register in the log when a player wins a combat
     def log_player_won

@@ -17,7 +17,7 @@ class Labyrinth
         @n_cols = n_cols
         @exit_row = exit_row
         @exit_col = exit_col
-        @monsterGrid = Matrix.new(n_rows){Array.new(n_cols,@@EMPTY_CHAR)}
+        @monsterGrid = Matrix.new(n_rows){Array.new(n_cols,nil)}
         @labyrinthGrid = Matrix.new(n_rows){Array.new(n_cols,nil)}
         @playerGrid = Matrix.new(n_rows){Array.new(n_cols,nil)}
         @labyrinthGrid[@exit_row][@exit_col] = @@EXIT_CHAR
@@ -30,7 +30,11 @@ class Labyrinth
     attr_reader :playerGrid
     # Proxima practica
     def spread_players(players)
-
+        for i in 1..players.length()
+            p = players.next
+            pos = self.random_empty_pos
+            self.put_player_2d(old_row = -1,old_col = -1,pos[ROW],pos[COL],p)
+        end
     end
     #@brief Return true if there is a player in the exit square
     def have_a_winner()
@@ -56,15 +60,44 @@ class Labyrinth
     end
     # Para la proxima práctica
     def put_player(direction, player)
-
+        old_row = player.row
+        old_col = player.col
+        new_pos = self.dir_2_pos(old_row,old_col,direction)
+        monster = self.put_player_2d(old_row,old_col,new_pos[@@ROW],new_pos[@@COL],player)
     end
     # Para la proxima practica
     def add_block(orientation, start_row, start_column, length)
-
+        if orientation = Orientation::VERTICAL
+            inc_row = 1
+            inc_col = 0
+        else
+            inc_row = 0
+            inc_col = 1
+        end
+        row = start_row
+        col = start_column
+        while self.pos_ok(row,col) && self.empty_pos(row,col) && length > 0
+            @labyrinthGrid[row][col] = @@BLOCK_CHAR
+            row += inc_row
+            col += inc_col
+            length -= 1
+        end
     end
     # Para la proxima practica
     def valid_moves(row, col)
-
+        output = Directions.new
+        if self.can_step_on(row + 1,col)
+            output.add(Directions::DOWN)
+        end
+        if self.can_step_on(row - 1,col)
+            output.add(Directions::UP)
+        end
+        if self.can_step_on(row,col + 1)
+            output.add(Directions::RIGHT)
+        end
+        if self.can_step_on(row,col - 1)
+            output.add(Directions::LEFT)
+        end
     end
     
     private
@@ -154,8 +187,28 @@ class Labyrinth
         pos[1] = columna_aleatoria
         pos
     end
-    # Para la proxima practica
-    def put_player_2d(old_row, row, col)
-
+    # Preguntar al teacher linea 198
+    def put_player_2d(old_row,old_col, row, col,player)
+        output = nill
+        if self.can_step_on(row,col)
+            if self.pos_ok(old_row,old_col)
+                p = @playerGrid[old_row][old_col]
+                if p == player
+                    self.update_old_pos(row,col)
+                    @playerGrid[old_row][old_col] = nil
+                end
+            end
+            monster_pos = self.monster_pos(row,col) =
+            if monster_pos
+                @labyrinthGrid[row][col] = @@COMBAT_CHAR
+                output = @monsterGrid[row][col]
+            else
+                number = player.number
+                @labyrinthGrid[row][col] = number
+            end
+            @playerGrid[row][col] = player
+            player.set_pos(row,col)
+        end
+        output
     end
 end
