@@ -1,13 +1,13 @@
 class Dice 
-        @@max_uses = 5
-        @@max_intelligence = 10.0
-        @@max_strength = 10.0
-        @@resurrect_prob = 0.3
-        @@weapons_reward = 2
-        @@shield_reward = 3
-        @@health_reward = 5
-        @@max_attack = 3
-        @@max_shield = 2
+        @@MAX_USES = 5
+        @@MAX_INTELLIGENCE = 10.0
+        @@MAX_STRENGTH = 10.0
+        @@RESURRECT_PROB = 0.3
+        @@WEAPONS_REWARD = 2
+        @@SHIELDS_REWARD = 3
+        @@HEALTH_REWARD = 5
+        @@MAX_ATTACK = 3
+        @@MAX_SHIELD = 2
         @@generator = Random.new
 
         def self.random_pos(max)
@@ -19,47 +19,47 @@ class Dice
         end 
         
         def self.random_intelligence
-            @@generator.rand(@@max_intelligence)
+            @@generator.rand(@@MAX_INTELLIGENCE)
         end
         
         def self.random_strength
-            @@generator.rand(@@max_strength)
+            @@generator.rand(@@MAX_STRENGTH)
         end
         
         def self.resurrect_player
-            @@generator.rand(1.0) < @@resurrect_prob 
+            @@generator.rand(1.0) < @@RESURRECT_PROB
         end
         
         def self.weapons_reward
-            @@generator.rand(@@weapons_reward + 1)
+            @@generator.rand(@@WEAPONS_REWARD + 1)
         end
         
         def self.shields_reward
-            @@generator.rand(@@shield_reward + 1)
+            @@generator.rand(@@SHIELDS_REWARD + 1)
         end 
         
         def self.health_reward
-            @@generator.rand(@@health_reward + 1)
+            @@generator.rand(@@HEALTH_REWARD + 1)
         end  
         
         def self.weapon_power
-            @@generator.rand(@@max_attack + 1)
+            @@generator.rand(@@MAX_ATTACK + 1)
         end
         
         def self.shield_power
-            @@generator.rand(@@max_shield + 1)
+            @@generator.rand(@@MAX_SHIELD + 1)
         end
         
         def self.uses_left
-            @@generator.rand(@@max_uses + 1)
+            @@generator.rand(@@MAX_USES + 1)
         end
         
-        def self.intensity(competencia)
-            @@generator.rand(competencia + 1)
+        def self.intensity(competence)
+            @@generator.rand(competence + 1)
         end 
         
         def self.discard_element(uses_left)
-             @@generator.rand(@@max_uses + 1) > uses_left  
+             @@generator.rand(@@MAX_USES + 1) > uses_left
         end 
         
     end

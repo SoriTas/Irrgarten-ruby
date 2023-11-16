@@ -5,10 +5,12 @@ class Shield
             @protection = protection
             @uses = uses
         end
+        attr_reader :protection
+        attr_reader :uses
         def protect
             
-            if uses > 0
-                uses += -1
+            if @uses > 0
+              @uses += -1
                 protect = @protection
             else
                 protect = 0
@@ -19,6 +21,6 @@ class Shield
             cadena
         end
         def discard
-            dice.discard_element(@uses)
+          Dice.discard_element(@uses)
         end 
     end

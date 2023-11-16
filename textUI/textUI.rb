@@ -57,7 +57,17 @@ module UI
     end
 
     def show_game(game_state)
-
+      puts game_state.labyrinth.to_s
+      game_state.players.each do |player|
+        puts player.to_s
+      end
+      game_state.monsters.each do |monster|
+        puts monster.to_s
+      end
+      puts "Current Player: "
+      puts game_state.current_player.to_s
+      puts "Winner: " << game_state.winner.to_s
+      puts game_state.log.to_s
     end
 
   end # class   

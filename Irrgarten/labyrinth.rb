@@ -17,10 +17,10 @@ class Labyrinth
         @n_cols = n_cols
         @exit_row = exit_row
         @exit_col = exit_col
-        @monsterGrid = Matrix.new(n_rows){Array.new(n_cols,nil)}
-        @labyrinthGrid = Matrix.new(n_rows){Array.new(n_cols,nil)}
-        @playerGrid = Matrix.new(n_rows){Array.new(n_cols,nil)}
-        @labyrinthGrid[@exit_row][@exit_col] = @@EXIT_CHAR
+        @monsterGrid = Array.new(n_rows){Array.new(n_cols){nil}}
+        @labyrinthGrid = Array.new(n_rows){Array.new(n_cols){@@EMPTY_CHAR}}
+        @playerGrid = Array.new(n_rows){Array.new(n_cols){nil}}
+        @labyrinthGrid[@exit_row,@exit_col] = @@EXIT_CHAR
     end
     attr_reader :n_rows
     attr_reader :n_cols
@@ -38,14 +38,15 @@ class Labyrinth
     end
     #@brief Return true if there is a player in the exit square
     def have_a_winner()
-        @playerGrid[@exit_row][@exit_col].nil?
+        !@playerGrid[@exit_row,@exit_col].nil?
     end
     #@brief  convert to string the current state of the labyrinth
     def to_string()
         estado = ""
         for i in 0..@n_rows-1
             for j in 0..@n_cols-1
-                estado << @labyrinthGrid[i][j]
+                estado << @labyrinthGrid[i,j].to_s
+                estado << " "
             end
             estado << "\n"
         end
@@ -56,7 +57,14 @@ class Labyrinth
         if row > @n_rows || col > @n_cols || row < 0 || col < 0
             raise Exception.new("Parametros fuera de rango")
         end
-        @monsterGrid[row][col] = monster
+        while !empty_pos(row,col)
+            row = Dice.random_pos(@n_rows)
+            col = Dice.random_pos(@n_cols)
+        end
+        monster.set_pos(row,col)
+        @monsterGrid[row,col] = monster
+        @labyrinthGrid[row,col] = @@MONSTER_CHAR
+
     end
     # Para la proxima práctica
     def put_player(direction, player)
@@ -77,7 +85,7 @@ class Labyrinth
         row = start_row
         col = start_column
         while self.pos_ok(row,col) && self.empty_pos(row,col) && length > 0
-            @labyrinthGrid[row][col] = @@BLOCK_CHAR
+            @labyrinthGrid[row,col] = @@BLOCK_CHAR
             row += inc_row
             col += inc_col
             length -= 1
@@ -87,37 +95,37 @@ class Labyrinth
     def valid_moves(row, col)
         output = Directions.new
         if self.can_step_on(row + 1,col)
-            output.add(Directions::DOWN)
+            output << Directions::DOWN
         end
         if self.can_step_on(row - 1,col)
-            output.add(Directions::UP)
+            output << Directions::UP
         end
         if self.can_step_on(row,col + 1)
-            output.add(Directions::RIGHT)
+            output << Directions::RIGHT
         end
         if self.can_step_on(row,col - 1)
-            output.add(Directions::LEFT)
+            output << Directions::LEFT
         end
     end
     
-    private
+
     #@brief Return true if the selected position is inside the labyrinth
     #@param row the row of the position
     # @param col the col of the position
     def pos_ok(row, col)
-        row > @n_rows && col > @n_cols && row < 0 && col < 0
+        row < @n_rows && col < @n_cols && row >= 0 && col >= 0
     end
     #@brief Return true if the position given is empty
     # @param row the row of the position
     # @param col the col of the position
     def empty_pos(row, col)
-        @labyrinthGrid[row][col] == @@EMPTY_CHAR
+        @labyrinthGrid[row,col] == @@EMPTY_CHAR
     end
     #@brief return true if there is a monster in the position
     # @param row the row of the position
     #  @param col the col of the position
     def monster_pos(row, col)
-        @labyrinthGrid[row][col] == @@MONSTER_CHAR
+        @labyrinthGrid[row,col] == @@MONSTER_CHAR
     end
     #brief return true if the position given is the exit block
     #@param row the row of the position
@@ -129,13 +137,13 @@ class Labyrinth
     #@param row the row of the position
     # @param col the col of the position
     def combat_pos(row, col)
-        @labyrinthGrid[row][col] == @@COMBAT_CHAR
+        @labyrinthGrid[row,col] == @@COMBAT_CHAR
     end
     #brief return true if the position can be accessed
     #@param row the row of the position
     # @param col the col of the position
     def can_step_on(row, col)
-        row > @n_rows && col > @n_cols && row < 0 && col < 0 && @labyrinthGrid[i][j] != @@BLOCK_CHAR
+        row < @n_rows && col < @n_cols && row >= 0 && col >= 0 && @labyrinthGrid[row,col] != @@BLOCK_CHAR
     end
     #brief change the the position to the current state
     #@param row the row of the position
@@ -145,10 +153,10 @@ class Labyrinth
             raise Exception.new("Parametros fuera de rango")
         end
 
-        if @labyrinthGrid[row][col] == @@COMBAT_CHAR
-            @labyrinthGrid[row][col] == @@MONSTER_CHAR
+        if @labyrinthGrid[row,col] == @@COMBAT_CHAR
+            @labyrinthGrid[row,col] == @@MONSTER_CHAR
         else
-            @labyrinthGrid[row][col] == @@EMPTY_CHAR
+            @labyrinthGrid[row,col] == @@EMPTY_CHAR
         end
 
     end
@@ -161,16 +169,16 @@ class Labyrinth
         new_pos << row
         new_pos << col
         if direction == Directions::UP
-            new_pos[0] += 1
+            new_pos[0] -= 1
         end
         if direction == Directions::DOWN
-            new_pos[0] -= 1
+            new_pos[0] += 1
         end
         if direction == Directions::RIGHT
             new_pos[1] += 1
         end
         if direction == Directions::LEFT
-            new_pos[0] -= 1
+            new_pos[1] -= 1
         end
         new_pos
     end
@@ -181,7 +189,7 @@ class Labyrinth
         while no_vacio == false
             fila_aleatoria = Dice.random_pos(@n_rows)
             columna_aleatoria = Dice.random_pos(@n_cols)
-            no_vacio = @labyrinthGrid[fila_aleatoria][columna_aleatoria] == @@EMPTY_CHAR
+            no_vacio = @labyrinthGrid[fila_aleatoria,columna_aleatoria] == @@EMPTY_CHAR
         end
         pos[0] = fila_aleatoria
         pos[1] = columna_aleatoria
@@ -192,21 +200,21 @@ class Labyrinth
         output = nill
         if self.can_step_on(row,col)
             if self.pos_ok(old_row,old_col)
-                p = @playerGrid[old_row][old_col]
+                p = @playerGrid[old_row,old_col]
                 if p == player
                     self.update_old_pos(row,col)
-                    @playerGrid[old_row][old_col] = nil
+                    @playerGrid[old_row,old_col] = nil
                 end
             end
-            monster_pos = self.monster_pos(row,col) =
+            monster_pos = self.monster_pos(row,col)
             if monster_pos
-                @labyrinthGrid[row][col] = @@COMBAT_CHAR
-                output = @monsterGrid[row][col]
+                @labyrinthGrid[row,col] = @@COMBAT_CHAR
+                output = @monsterGrid[row,col]
             else
                 number = player.number
-                @labyrinthGrid[row][col] = number
+                @labyrinthGrid[row,col] = number
             end
-            @playerGrid[row][col] = player
+            @playerGrid[row,col] = player
             player.set_pos(row,col)
         end
         output

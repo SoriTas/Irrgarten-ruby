@@ -1,14 +1,14 @@
-require_relative 'Dice'
+require_relative 'dice'
 
 class Monster
   @@INITAL_HEALTH = 5
-  def initialise(name,intelligence,strength,row,col)
+  def initialize(name,intelligence,strength)
     @name = name
     @intelligence = intelligence
     @strength = strength
     @health = @@INITAL_HEALTH
-    @row = row
-    @col = col
+    @row = -1
+    @col = -1
   end
   #@brief Checks if the monster is dead. Return a true if health is lower or equal to zero
   def dead
@@ -29,9 +29,10 @@ class Monster
       defensive_energy = Dice.intensity(@intelligence)
       if defensive_energy < recieved_attack
         self.got_wounded
-        is_dead = dead
+        is_dead = self.dead
       end
     end
+    is_dead
   end
   #@brief Refresh the position of the monster
   #@param row Fila nueva
@@ -45,14 +46,25 @@ class Monster
   #@brief Return the a string containing the stats of the mosnter
   def to_String
     
-    estado = ""
+    estado = " "
 
     estado << @name
-    estado << @intelligence
-    estado << @strength
-    estado << @health
-    estado << @row
-    estado << @col
+    estado << ";"
+    estado << "Inteligence: "
+    estado << @intelligence.to_s
+    estado << ";"
+    estado << "Strength: "
+    estado << @strength.to_s
+    estado << ";"
+    estado << "Health: "
+    estado << @health.to_s
+    estado << ";"
+    estado << "Row: "
+    estado << @row.to_s
+    estado << ";"
+    estado << "Col: "
+    estado << @col.to_s
+    estado << ";"
 
     estado
 

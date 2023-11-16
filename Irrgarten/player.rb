@@ -1,7 +1,6 @@
 require_relative 'directions'
 require_relative 'weapon'
 require_relative 'shield'
-require_relative 'dice'
 
 class Player
   @@MAX_WEAPONS=2
@@ -9,17 +8,19 @@ class Player
   @@INITIAL_HEALTH=10
   @@HITS2LOSE=3
   
-  def initialize(number,intelligence,strength,row,col)
-    @name = "Player #" + number
+  def initialize(number,intelligence,strength)
+    @name = "Player #" + number.to_s
     @number = number
     @intelligence = intelligence
     @strength = strength
     @health = @@INITIAL_HEALTH
-    @row = row
-    @col = col
+    @row = -1
+    @col = -1
     @consecutive_hits = 0
-    @weapons = Array.new(@@MAX_WEAPONS)
-    @shields = Array.new(@@MAX_SHIELDS)
+    @weapons = Array.new
+    @weapons << Weapon.new(Dice.weapon_power,Dice.uses_left)
+    @shields = Array.new
+    @shields << Shield.new(Dice.shield_power,Dice.uses_left)
   end
   attr_reader :row
   attr_reader :col
@@ -27,8 +28,8 @@ class Player
   #@brief It empties the weapon and shield array and returns the health and consecutive hits to its default value
   def resurrect
     
-    @weapons = Array.clear
-    @shields = Array.clear
+    @weapons.clear
+    @shields.clear
     @health = @@INITIAL_HEALTH
     reset_hits
 
@@ -50,17 +51,22 @@ class Player
   end
   #Preguntar al teacher
   def move(direction,valid_moves)
-    size = valid_moves.length
-    contained = valid_moves.contains(direction)
+    if valid_moves == nil
+      size = 0
+      contained = false
+    else
+      size = valid_moves.length
+      contained = valid_moves.include? direction
+    end
     if size > 0 && !contained
-      Directions first_element = valid_moves[0];
+      first_element = valid_moves[0];
     else
       direction
     end
   end
   #@brief adds the player strength with the value of his weapons
   def attack
-    
+
     attack = @strength + sum_weapons
 
     attack
@@ -91,87 +97,93 @@ class Player
   #@brief converts to string the current state of the player
   def to_string
     
-    estado = ""
+    estado = " "
 
     estado << @name
-    estado << @intelligence
-    estado << @strength
-    estado << @health
-    estado << @row
-    estado << @col
-    estado << @consecutive_hits
-    estado << @weapons
-    estado << @shields
-    estado << "\n"
-
+    estado << ";"
+    estado << "Intelligence: "
+    estado << @intelligence.to_s
+    estado << ";"
+    estado << "Strength: "
+    estado << @strength.to_s
+    estado << ";"
+    estado << "Health: "
+    estado << @health.to_s
+    estado << ";"
+    estado << "Row: "
+    estado << @row.to_s
+    estado << ";"
+    estado << "Col: "
+    estado << @col.to_s
+    estado << ";"
+    estado << "Consecutive Hits: "
+    estado << @consecutive_hits.to_s
+    estado << ";"
+    @weapons.each do |weapon|
+      estado << weapon.to_s
+      estado << ";"
+    end
+    @shields.each do |shield|
+      estado << shield.to_s
+      estado << ";"
+    end
     estado
 
   end
 
   def recieve_weapon(weapon)
-    for i in 1..@weapons.length
-      wi = @weapons.next
+    @weapons.each do |wi|
       discard = wi.discard
       if discard
-        @weapons.remove(wi)
+        @weapons.delete(wi)
       end
     end
-    size = @weapons.size
+    size = @weapons.length
     if size < @@MAX_WEAPONS
-      @weapons.add(weapon)
+      @weapons << weapon
     end
   end
 
   def recieve_shield(s)
-    for i in 1..@shields.length
-      si = @shields.next
+    @shields.each do |si|
       discard = si.discard
       if discard
-        @shields.remove(si)
+        @shields.delete(si)
       end
     end
     size = @shields.length
     if size < @@MAX_SHIELDS
-      @shields.add(s)
+      @shields << s
     end
   end
 
-  private
   #@brief generates a new weapon
   def new_weapon
     
-    weapon(Dice.weapon_power, Dice.uses_left)
+    weapon = Weapon.new(Dice.weapon_power, Dice.uses_left)
 
   end
   #@brief generates a new shield
   def new_shield
     
-    shield(Dice.shield_power, Dice.uses_left)
+    shield = Shield.new(Dice.shield_power, Dice.uses_left)
 
   end
   #@brief returns the addition of all the weapons power
   def sum_weapons
-
-    for i in 0...weapons.length
-    
-      suma = suma + weapons[i].attack
-
-    end
-
+    suma = 0
+      @weapons.each do |weapon|
+        suma += weapon.attack
+      end
     suma
-
   end
   #
   def sum_shields
-    
-    for i in 0...shields.length
-    
-      suma = suma + shields[i].protect
-
+    suma = 0
+    @shields.each do |shield|
+      suma += shield.protect
     end
-
     suma
-
   end
   #@brief adds the player intelligence with the value of its weapons
   def defensive_energy
@@ -190,13 +202,15 @@ class Player
     else
       self.reset_hits
     end
-    if @consecutive_hits == @@HITS2LOSE
+    if @consecutive_hits == @@HITS2LOSE || self.dead
       self.reset_hits
       lose = true
     else
       lose = false
     end
   end
+
+  private
   #@brief sets de value of consecutive_hits to cero
   def reset_hits
     
@@ -215,7 +229,5 @@ class Player
     @consecutive_hits += 1
 
   end
-
-  #Esto es una prueba
 
 end
