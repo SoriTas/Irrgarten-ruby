@@ -1,26 +1,20 @@
 require_relative 'dice'
+require_relative 'combat_element'
+module Irrgarten
 
-class Shield
+class Shield < Combat_element
         def initialize(protection,uses)
-            @protection = protection
-            @uses = uses
+          super(protection,uses)
         end
         attr_reader :protection
         attr_reader :uses
         def protect
-            
-            if @uses > 0
-              @uses += -1
-                protect = @protection
-            else
-                protect = 0
-            end
+          produce_effect
         end
         def to_s
-            cadena = "S[" + @protection.to_s + "," + @uses.to_s + "]"
+            cadena = "S" + super.to_s
             cadena
         end
-        def discard
-          Dice.discard_element(@uses)
-        end 
-    end
+end
+
+end

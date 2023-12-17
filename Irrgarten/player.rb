@@ -1,30 +1,33 @@
 require_relative 'directions'
 require_relative 'weapon'
 require_relative 'shield'
-
-class Player
+require_relative 'labyrinth_character'
+module Irrgarten
+class Player < Labyrinth_character
   @@MAX_WEAPONS=2
   @@MAX_SHIELDS=3
   @@INITIAL_HEALTH=10
   @@HITS2LOSE=3
   
   def initialize(number,intelligence,strength)
-    @name = "Player #" + number.to_s
+    super("Player #" + number.to_s, intelligence, strength, @@INITIAL_HEALTH)
     @number = number
-    @intelligence = intelligence
-    @strength = strength
-    @health = @@INITIAL_HEALTH
-    @row = -1
-    @col = -1
     @consecutive_hits = 0
     @weapons = Array.new
     @weapons << Weapon.new(Dice.weapon_power,Dice.uses_left)
     @shields = Array.new
     @shields << Shield.new(Dice.shield_power,Dice.uses_left)
   end
-  attr_reader :row
-  attr_reader :col
+  def copy_player(other)
+    copy_char(other)
+    @number = other.number
+    @consecutive_hits = 0
+    @weapons = other.weapons
+    @shields = other.shields
+  end
   attr_reader :number
+  attr_reader :weapons
+  attr_reader :shields
   #@brief It empties the weapon and shield array and returns the health and consecutive hits to its default value
   def resurrect
     
@@ -32,21 +35,6 @@ class Player
     @shields.clear
     @health = @@INITIAL_HEALTH
     reset_hits
-
-  end
-  #@biref Modifies the players position
-  #@param row the row of the players position
-  #@param col the column of the players position
-  def set_pos(row, col)
-    
-    @row = row
-    @col = col
-
-  end
-  #@brief returns if the player is dead
-  def dead
-    
-    @health <= 0
 
   end
   #Preguntar al teacher
@@ -99,23 +87,7 @@ class Player
     
     estado = " "
 
-    estado << @name
-    estado << ";"
-    estado << "Intelligence: "
-    estado << @intelligence.to_s
-    estado << ";"
-    estado << "Strength: "
-    estado << @strength.to_s
-    estado << ";"
-    estado << "Health: "
-    estado << @health.to_s
-    estado << ";"
-    estado << "Row: "
-    estado << @row.to_s
-    estado << ";"
-    estado << "Col: "
-    estado << @col.to_s
-    estado << ";"
+    estado << super.to_s
     estado << "Consecutive Hits: "
     estado << @consecutive_hits.to_s
     estado << ";"
@@ -169,31 +141,6 @@ class Player
     shield = Shield.new(Dice.shield_power, Dice.uses_left)
 
   end
-  #@brief returns the addition of all the weapons power
-  def sum_weapons
-    suma = 0
-      @weapons.each do |weapon|
-        suma += weapon.attack
-      end
-    suma
-  end
-  #
-  def sum_shields
-    suma = 0
-    @shields.each do |shield|
-      suma += shield.protect
-    end
-    suma
-  end
-  #@brief adds the player intelligence with the value of its weapons
-  def defensive_energy
-    
-    defense = @intelligence + sum_shields
-
-    defense
-
-  end
-
   def manage_hit(receieved_attack)
     defense = self.defensive_energy
     if defense < receieved_attack
@@ -229,5 +176,29 @@ class Player
     @consecutive_hits += 1
 
   end
+  protected
+  def sum_weapons
+    suma = 0
+    @weapons.each do |weapon|
+      suma += weapon.attack
+    end
+    suma
+  end
+  #
+  def sum_shields
+    suma = 0
+    @shields.each do |shield|
+      suma += shield.protect
+    end
+    suma
+  end
+  def defensive_energy
+
+    defense = @intelligence + sum_shields
+
+    defense
+
+  end
+end
 
 end

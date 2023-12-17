@@ -27,10 +27,11 @@ class Labyrinth
     attr_reader :exit_row
     attr_reader :exit_col
     attr_reader :monsterGrid
-    attr_reader :playerGrid
+    attr_accessor :playerGrid
+    attr_accessor :labyrinthGrid
     # Proxima practica
     def spread_players(players)
-        for i in 1..players.length()
+        for i in 1..players.length
             p = players.next
             pos = self.random_empty_pos
             self.put_player_2d(old_row = -1,old_col = -1,pos[ROW],pos[COL],p)

@@ -60,6 +60,14 @@ class Dice
         
         def self.discard_element(uses_left)
              @@generator.rand(@@MAX_USES + 1) > uses_left
-        end 
+        end
+        def self.nextStep(preference, valid_moves, intelligence)
+          if(@@generator.rand(@@MAX_INTELLIGENCE) < intelligence)
+            preference
+          else
+            random_pos = @@generator.rand(valid_moves.size)
+            valid_moves[random_pos]
+          end
+        end
         
     end

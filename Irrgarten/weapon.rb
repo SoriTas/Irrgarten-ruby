@@ -1,27 +1,22 @@
 
+require_relative 'combat_element'
 require_relative 'dice'
-class Weapon
+module Irrgarten
+class Weapon < Combat_element
         def initialize(power,uses)
-            @power = power
-            @uses = uses
+          super(power,uses)
         end
         attr_reader :power
         attr_reader :uses
         def attack
-            if uses > 0
-                intensidad = @power
-                @uses += -1
-            else
-                intensidad = 0  
-            end
-            intensidad
+          produce_effect
         end
         def to_s
-            cadena = "W[" + @power.to_s + "," + @uses.to_s + "]"
+            cadena = "W" + super.to_s
             cadena
         end
-        def discard
-          Dice.discard_element(@uses)
-        end 
 
-    end
+end
+
+end
+
